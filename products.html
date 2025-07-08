@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - ShopEase</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/products.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .products-section {
+            padding: 4rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .filters {
+            background-color: var(--white);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 0.5rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 5px;
+            min-width: 150px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-details {
+            padding: 1rem;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .product-description {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .cart-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .cart-btn:hover {
+            background-color: #357abd;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary-color);
+            background-color: var(--white);
+            color: var(--primary-color);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button.active,
+        .pagination button:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <h1>ShopEase</h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="products.html" class="active"><i class="fas fa-shopping-bag"></i> Products</a></li>
+            <li><a href="about.html"><i class="fas fa-info-circle"></i> About Us</a></li>
+            <li><a href="contact.html"><i class="fas fa-envelope"></i> Contact</a></li>
+        </ul>
+        <div class="auth-buttons">
+            <button id="loginBtn" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
+            <button id="registerBtn" class="btn"><i class="fas fa-user-plus"></i> Register</button>
+            <button id="logoutBtn" class="btn hidden"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+
+    <div class="products-section">
+        <h1 style="text-align: center; color: var(--secondary-color); margin-bottom: 2rem;">Our Products</h1>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="books">Books</option>
+                    <option value="home">Home & Garden</option>
+                </select>
+                <select id="priceFilter">
+                    <option value="">Price Range</option>
+                    <option value="0-50">$0 - $50</option>
+                    <option value="51-100">$51 - $100</option>
+                    <option value="101-500">$101 - $500</option>
+                    <option value="501+">$501+</option>
+                </select>
+                <select id="sortFilter">
+                    <option value="featured">Featured</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="name-asc">Name: A to Z</option>
+                    <option value="name-desc">Name: Z to A</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="Search products...">
+            </div>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Products will be loaded dynamically via JavaScript -->
+        </div>
+
+        <div class="pagination" id="pagination">
+            <!-- Pagination will be generated via JavaScript -->
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password:</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Register</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Full Name:</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email:</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password:</label>
+                    <input type="password" id="registerPassword" required>
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>ShopEase</h3>
+                <p>Your one-stop shop for all your needs</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="products.html">Products</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p>Email: joycedogfobaare@gmail.com/p>
+                <p>Phone: (0559)709637</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 ShopEase. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Sample products data (in a real application, this would come from a backend)
+        const allProducts = [
+            {
+
+                // this are the images
+                id: 1,
+                name: 'Wireless Headphones',
+                price: 99.99,
+                category: 'electronics',
+                image: 'images/wh4.jpg',
+                description: 'High-quality wireless headphones with noise cancellation'
+            },
+            {
+                id: 2,
+                name: 'Smartphone',
+                price: 699.99,
+                category: 'electronics',
+                image: 'images/sp1.jpeg',
+                description: 'Latest model smartphone with advanced features'
+            },
+            {
+                id: 3,
+                name: 'Laptop',
+                price: 1299.99,
+                category: 'electronics',
+                image: 'images/lb2.jpg',
+                description: 'Powerful laptop for work and gaming'
+            },
+            {
+                id: 4,
+                name: 'Smart Watch',
+                price: 199.99,
+                category: 'electronics',
+                image: 'images/sw2.jpg',
+                description: 'Feature-rich smartwatch with health monitoring'
+            },
+            {
+                id: 5,
+                name: 'Premium Headphones',
+                price: 149.99,
+                category: 'electronics',
+                image: 'images/wh2.jpg',
+                description: 'Premium wireless headphones with superior sound quality'
+            },
+            {
+                id: 6,
+                name: ' Designer T-shirt',
+                price: 149.99,
+                category: 'cloth',
+                image: 'images/dts.jpg',
+                description: 'Designer T-shirt with a nice design '
+            },
+            {
+                id: 7,
+                name: ' Denim jeans',
+                price: 149.99,
+                category: 'cloth',
+                image: 'images/dj.jpg',
+                description: 'Denim jeans very strong and quality'
+            },
+            {
+                id: 8,
+                name: ' novel collection',
+                price: 157.99,
+                category: 'books',
+                image: 'images/nc1.jpg',
+                description: 'Novel collection is very nice and quality'
+            },
+            {   id: 9,
+                name: ' Garden Tools Set',
+                price: 149.99,
+                category: 'Garden tools',
+                image: 'images/gts.jpg',
+                description: 'Garden tools is quality'
+            },
+            {   id: 10,
+                name: ' Winter Jacket',
+                price: 149.99,
+                category: 'cloth',
+                image: 'images/wj.jpg',
+                description: 'a very stronge winter jacket'
+            },
+            {   id: 11,
+                name: ' Cooffee Table',
+                price: 149.99,
+                category: 'item',
+                image: 'images/.jpg',
+                 description: 'a very stronge winter jacket'
+            },
+            {    id: 12,
+                name: ' Cookbook Collection',
+                price: 149.99,
+                category: 'cloth',
+                image: 'images/cbc.jpg',
+                description: 'a very stronge winter jacket'
+            },
+            {   id: 13,
+                name: ' Bluetooth',
+                price: 149.99,
+                category: 'cloth',
+                image: 'images/bs.jpg',
+                description: 'a very stronge winter jacket'
+            },
+                  
+                
+            
+
+        ];
+        
+
+
+
+
+
+
+
+
+
+        let currentProducts = [...allProducts];
+        const productsPerPage = 6;
+        let currentPage = 1;
+
+        // Filter and sort handlers
+        document.getElementById('categoryFilter').addEventListener('change', filterProducts);
+        document.getElementById('priceFilter').addEventListener('change', filterProducts);
+        document.getElementById('sortFilter').addEventListener('change', filterProducts);
+        document.getElementById('searchInput').addEventListener('input', filterProducts);
+
+        function filterProducts() {
+            const category = document.getElementById('categoryFilter').value;
+            const priceRange = document.getElementById('priceFilter').value;
+            const sortBy = document.getElementById('sortFilter').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            currentProducts = allProducts.filter(product => {
+                const matchesCategory = !category || product.category === category;
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm) ||
+                                    product.description.toLowerCase().includes(searchTerm);
+                
+                let matchesPrice = true;
+                if (priceRange) {
+                    const [min, max] = priceRange.split('-').map(num => num === '+' ? Infinity : Number(num));
+                    matchesPrice = product.price >= min && (max === Infinity || product.price <= max);
+                }
+
+                return matchesCategory && matchesPrice && matchesSearch;
+            });
+
+            // Sort products
+            currentProducts.sort((a, b) => {
+                switch (sortBy) {
+                    case 'price-low':
+                        return a.price - b.price;
+                    case 'price-high':
+                        return b.price - a.price;
+                    case 'name-asc':
+                        return a.name.localeCompare(b.name);
+                    case 'name-desc':
+                        return b.name.localeCompare(a.name);
+                    default:
+                        return 0;
+                }
+            });
+
+            currentPage = 1;
+            displayProducts();
+            updatePagination();
+        }
+
+        function displayProducts() {
+            const start = (currentPage - 1) * productsPerPage;
+            const end = start + productsPerPage;
+            const paginatedProducts = currentProducts.slice(start, end);
+
+            const productsGrid = document.getElementById('productsGrid');
+            productsGrid.innerHTML = '';
+
+            paginatedProducts.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-image">
+                    <div class="product-details">
+                        <h3 class="product-title">${product.name}</h3>
+                        <p class="product-price">$${product.price.toFixed(2)}</p>
+                        <p class="product-description">${product.description}</p>
+                        <button class="cart-btn" onclick="addToCart(${product.id})">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                    </div>
+                `;
+                productsGrid.appendChild(productCard);
+            });
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(currentProducts.length / productsPerPage);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            if (totalPages > 1) {
+                // Previous button
+                if (currentPage > 1) {
+                    const prevButton = document.createElement('button');
+                    prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                    prevButton.onclick = () => {
+                        currentPage--;
+                        displayProducts();
+                        updatePagination();
+                    };
+                    pagination.appendChild(prevButton);
+                }
+
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageButton = document.createElement('button');
+                    pageButton.textContent = i;
+                    if (i === currentPage) pageButton.classList.add('active');
+                    pageButton.onclick = () => {
+                        currentPage = i;
+                        displayProducts();
+                        updatePagination();
+                    };
+                    pagination.appendChild(pageButton);
+                }
+
+                // Next button
+                if (currentPage < totalPages) {
+                    const nextButton = document.createElement('button');
+                    nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                    nextButton.onclick = () => {
+                        currentPage++;
+                        displayProducts();
+                        updatePagination();
+                    };
+                    pagination.appendChild(nextButton);
+                }
+            }
+        }
+
+        // Initialize products display
+        displayProducts();
+        updatePagination();
+
+        // Add to cart functionality
+        function addToCart(productId) {
+            // In a real application, this would add the product to a shopping cart
+            const product = allProducts.find(p => p.id === productId);
+            if (product) {
+                showMessage(`Added ${product.name} to cart!`);
+            }
+        }
+    </script>
+</body>
+</html> 
